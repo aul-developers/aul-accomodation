@@ -52,32 +52,26 @@ export default function AdminDashboard() {
   }));
 
   return (
-    <div className="flex flex-col gap-6 md:gap-8 pb-10">
-      <div className="flex flex-col md:flex-row md:justify-between md:items-end gap-4 border-b border-slate-200 dark:border-slate-800 pb-4 md:pb-6">
+    <div className="flex flex-col gap-8 pb-10">
+      {/* Header Section */}
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-primary tracking-tight">
+          <h1 className="text-3xl font-bold tracking-tight text-primary">
             Admin Overview
           </h1>
-          <p className="text-sm md:text-base text-slate-500 mt-1 md:mt-2">
+          <p className="text-slate-500 mt-1">
             Real-time accommodation status, revenue, and management.
           </p>
         </div>
-        <div className="flex gap-2 md:gap-3">
-          <Link href="/admin/allocations" className="flex-1 md:flex-none">
-            <Button
-              variant="outline"
-              className="gap-2 w-full md:w-auto text-sm"
-            >
-              <FileText className="h-4 w-4" />
-              <span className="hidden sm:inline">View Allocations</span>
-              <span className="sm:hidden">Allocations</span>
+        <div className="hidden md:flex gap-3">
+          <Link href="/admin/allocations">
+            <Button variant="outline" className="gap-2">
+              <FileText className="h-4 w-4" /> View Allocations
             </Button>
           </Link>
-          <Link href="/admin/hostels" className="flex-1 md:flex-none">
-            <Button className="bg-primary text-white hover:bg-primary/90 gap-2 w-full md:w-auto text-sm">
-              <Plus className="h-4 w-4" />
-              <span className="hidden sm:inline">Manage Hostels</span>
-              <span className="sm:hidden">Hostels</span>
+          <Link href="/admin/hostels">
+            <Button className="bg-primary text-white hover:bg-primary/90 gap-2">
+              <Plus className="h-4 w-4" /> Manage Hostels
             </Button>
           </Link>
         </div>
