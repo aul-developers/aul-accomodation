@@ -1,65 +1,73 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { ArrowRight, Globe } from "lucide-react";
+import { Logo } from "@/components/ui/logo";
+
+export default function HomePage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="min-h-screen flex flex-col bg-white text-slate-900 selection:bg-primary/10 selection:text-primary">
+      {/* Navbar - Ultra Minimal */}
+      <nav className="w-full p-8 md:p-12 flex items-center justify-between container mx-auto">
+        <Logo width={50} height={50} />
+        <div className="flex items-center gap-6 text-sm font-semibold tracking-wide">
+          <span className="hidden md:inline-block text-slate-500">
+            2025/2026 Session
+          </span>
+          <Link
+            href="/login"
+            className="text-primary hover:opacity-80 transition-opacity"
+          >
+            Login
+          </Link>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </nav>
+
+      {/* Main Content - Swiss Minimalist Hero */}
+      <main className="flex-1 flex flex-col justify-center container mx-auto px-8 md:px-0">
+        <div className="max-w-5xl space-y-12">
+          <div className="space-y-6">
+            {/* Status Pill */}
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-slate-100 rounded-md text-xs font-bold uppercase tracking-widest text-primary w-fit">
+              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+              <span>Portal Open</span>
+            </div>
+
+            {/* Massive Typography - Improved Visibility */}
+            <h1 className="text-7xl md:text-9xl font-bold font-heading tracking-tighter leading-[0.9] text-primary">
+              Student <br />
+              <span className="text-slate-400">Living.</span>
+            </h1>
+
+            <p className="text-xl md:text-2xl text-slate-600 max-w-2xl font-light leading-relaxed pt-4">
+              The official accommodation platform for Anchor University.{" "}
+              <br className="hidden md:block" />
+              Secure your space in minutes, not days.
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-6 pt-4">
+            <Link href="/login">
+              <Button className="h-16 px-12 text-lg font-bold bg-primary text-white hover:bg-primary/90 rounded-none transition-all shadow-none flex items-center gap-4">
+                Access Portal <ArrowRight className="w-5 h-5" />
+              </Button>
+            </Link>
+          </div>
         </div>
       </main>
+
+      {/* Minimal Footer */}
+      <footer className="p-8 md:p-12 w-full container mx-auto flex flex-col md:flex-row items-start md:items-end justify-between text-xs text-slate-400 font-medium uppercase tracking-widest gap-4">
+        <div className="space-y-1">
+          <p>Anchor University Lagos</p>
+          <p>© {new Date().getFullYear()} All Rights Reserved</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Globe className="w-4 h-4" />
+          <span>Official Secure Gateway</span>
+        </div>
+      </footer>
     </div>
   );
 }
