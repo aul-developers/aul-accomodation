@@ -59,12 +59,12 @@ export default function LoginPage() {
       </div>
 
       {/* Right: White Section */}
-      <div className="flex items-center justify-center p-8 bg-white">
+      <div className="flex items-center justify-center p-8 bg-white relative">
+        <div className="absolute top-8 right-8 lg:hidden">
+          <Logo width={60} height={60} />
+        </div>
         <div className="w-full max-w-[450px] space-y-10">
           <div className="text-center space-y-2">
-            <div className="lg:hidden mx-auto mb-8">
-              <Logo width={80} height={80} />
-            </div>
             <h2 className="text-2xl font-bold text-primary tracking-tight">
               Sign In
             </h2>
