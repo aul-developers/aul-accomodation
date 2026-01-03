@@ -60,7 +60,7 @@ export default function LoginPage() {
 
       {/* Right: White Section */}
       <div className="flex items-center justify-center p-8 bg-white relative">
-        <div className="absolute top-8 right-8 lg:hidden">
+        <div className="absolute top-8 left-8 lg:hidden">
           <Logo width={60} height={60} />
         </div>
         <div className="w-full max-w-[450px] space-y-10">
