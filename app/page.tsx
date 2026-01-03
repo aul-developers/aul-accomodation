@@ -35,8 +35,9 @@ export default function HomePage() {
             </div>
 
             {/* Massive Typography - Improved Visibility */}
-            <h1 className="text-7xl md:text-9xl font-bold font-heading tracking-tighter leading-[0.9] text-primary">
-              Student <br />
+            {/* Massive Typography - Improved Visibility */}
+            <h1 className="text-7xl md:text-9xl font-bold font-heading tracking-tighter leading-[0.9]">
+              <span className="text-[#471344]">Student</span> <br />
               <span className="text-slate-400">Living.</span>
             </h1>
 

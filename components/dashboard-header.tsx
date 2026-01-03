@@ -82,7 +82,7 @@ export function DashboardHeader() {
               variant="ghost"
               className="relative h-12 w-12 md:w-auto md:h-12 rounded-full md:pl-1 md:pr-4 gap-3 hover:bg-slate-50 transition-all group p-0"
             >
-              <div className="h-10 w-10 rounded-full bg-[#5d2b5c] flex items-center justify-center text-white font-bold ring-4 ring-white shadow-lg shadow-purple-900/10 group-hover:scale-105 transition-transform shrink-0">
+              <div className="h-10 w-10 rounded-full bg-[#471344] flex items-center justify-center text-white font-bold ring-4 ring-white shadow-lg shadow-purple-900/10 group-hover:scale-105 transition-transform shrink-0">
                 JD
               </div>
               <div className="flex flex-col items-start text-left md:flex hidden">

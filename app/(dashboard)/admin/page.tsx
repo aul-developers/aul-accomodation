@@ -214,7 +214,7 @@ export default function AdminDashboard() {
                   <Bar
                     dataKey="occupied"
                     name="Occupied"
-                    fill="#1a237e" /* Primary Deep Plumish Blue */
+                    fill="#471344" /* Official Brand Purple */
                     radius={[4, 4, 0, 0]}
                     barSize={32}
                   />
