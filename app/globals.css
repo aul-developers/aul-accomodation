@@ -66,18 +66,18 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
 
-  /* Deep Anchor Royal Brand - Strict 2-Tone */
-  --primary: oklch(0.205 0 0); /* User Requested Deep Plum */
-  --primary-foreground: oklch(0.985 0 0);
+  /* Deep Anchor Purple Brand - Official Color */
+  --primary: #471344; /* Official Brand Purple */
+  --primary-foreground: #ffffff;
 
   --secondary: oklch(0.97 0 0); /* Slate 100 - Neutral Secondary */
-  --secondary-foreground: oklch(0.205 0 0);
+  --secondary-foreground: #471344;
 
   --muted: oklch(0.97 0 0); /* Slate 200 */
   --muted-foreground: oklch(0.556 0 0); /* Slate 500 */
 
   --accent: oklch(0.97 0 0); /* Slate 50 */
-  --accent-foreground: oklch(0.205 0 0);
+  --accent-foreground: #471344;
 
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: #ffffff;
@@ -106,13 +106,13 @@
 
   --sidebar-foreground: oklch(0.145 0 0);
 
-  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary: #471344;
 
-  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary-foreground: #ffffff;
 
   --sidebar-accent: oklch(0.97 0 0);
 
-  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-accent-foreground: #471344;
 
   --sidebar-border: oklch(0.922 0 0);
 
