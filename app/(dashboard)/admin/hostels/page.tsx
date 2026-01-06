@@ -65,6 +65,11 @@ export default function AdminHostelsPage() {
         6: newHostel.price,
         8: newHostel.price - 50000,
       },
+      roomConfigs: {
+        4: { totalRooms: 10, price: newHostel.price + 100000 },
+        6: { totalRooms: 10, price: newHostel.price },
+        8: { totalRooms: 10, price: newHostel.price - 50000 },
+      },
     };
 
     setHostels([...hostels, hostel]);
@@ -80,6 +85,7 @@ export default function AdminHostelsPage() {
     image: string;
     roomTypes?: number[];
     priceList?: Record<number, number>;
+    roomConfigs?: Record<number, { totalRooms: number; price: number }>;
   }) => {
     if (!editDialog.hostel) return;
 
@@ -96,6 +102,7 @@ export default function AdminHostelsPage() {
               image: updatedHostel.image,
               roomTypes: updatedHostel.roomTypes || h.roomTypes,
               priceList: updatedHostel.priceList || h.priceList,
+              roomConfigs: updatedHostel.roomConfigs || h.roomConfigs,
             }
           : h
       )

@@ -9,6 +9,7 @@ export type Hostel = {
     gender: "Male" | "Female" | "Mixed";
     roomTypes: number[]; // Array of bed counts available
     priceList: Record<number, number>; // Capacity -> Price mapping
+    roomConfigs: Record<number, { totalRooms: number; price: number }>; // Capacity -> { totalRooms, price }
 };
 
 export type Room = {
@@ -53,6 +54,13 @@ export const hostels: Hostel[] = [
             8: 100000,
             10: 80000,
             12: 60000
+        },
+        roomConfigs: {
+            4: { totalRooms: 10, price: 250000 },
+            6: { totalRooms: 10, price: 150000 },
+            8: { totalRooms: 10, price: 100000 },
+            10: { totalRooms: 10, price: 80000 },
+            12: { totalRooms: 10, price: 60000 }
         }
     },
     {
@@ -70,6 +78,12 @@ export const hostels: Hostel[] = [
             6: 150000,
             8: 100000,
             10: 80000
+        },
+        roomConfigs: {
+            4: { totalRooms: 10, price: 250000 },
+            6: { totalRooms: 10, price: 150000 },
+            8: { totalRooms: 10, price: 100000 },
+            10: { totalRooms: 10, price: 80000 }
         }
     },
     {
@@ -88,6 +102,13 @@ export const hostels: Hostel[] = [
             8: 100000,
             10: 80000,
             12: 60000
+        },
+        roomConfigs: {
+            4: { totalRooms: 10, price: 250000 },
+            6: { totalRooms: 10, price: 150000 },
+            8: { totalRooms: 10, price: 100000 },
+            10: { totalRooms: 10, price: 80000 },
+            12: { totalRooms: 10, price: 60000 }
         }
     },
     {
@@ -105,6 +126,12 @@ export const hostels: Hostel[] = [
             4: 250000,
             6: 150000,
             8: 100000
+        },
+        roomConfigs: {
+            2: { totalRooms: 5, price: 300000 },
+            4: { totalRooms: 10, price: 250000 },
+            6: { totalRooms: 10, price: 150000 },
+            8: { totalRooms: 10, price: 100000 }
         }
     },
     {
@@ -119,6 +146,9 @@ export const hostels: Hostel[] = [
         roomTypes: [2],
         priceList: {
             2: 350000
+        },
+        roomConfigs: {
+            2: { totalRooms: 5, price: 350000 }
         }
     },
     {
@@ -135,6 +165,11 @@ export const hostels: Hostel[] = [
             4: 250000,
             6: 150000,
             8: 100000
+        },
+        roomConfigs: {
+            4: { totalRooms: 8, price: 250000 },
+            6: { totalRooms: 8, price: 150000 },
+            8: { totalRooms: 8, price: 100000 }
         }
     },
     {
@@ -149,6 +184,9 @@ export const hostels: Hostel[] = [
         roomTypes: [2],
         priceList: {
             2: 1000000
+        },
+        roomConfigs: {
+            2: { totalRooms: 20, price: 1000000 }
         }
     }
 ];
@@ -160,38 +198,44 @@ hostels.forEach(hostel => {
     let hostelCapacity = 0;
     let hostelAvailable = 0;
 
-    // Create 5 rooms for EACH room type specified for this hostel
-    // e.g., if types are [4, 6], we create 5x 4-bed rooms and 5x 6-bed rooms
-    hostel.roomTypes.forEach(capacity => {
-        for (let i = 1; i <= 5; i++) {
-            const roomNum = `${capacity}0${i}`; // e.g., 401, 402... 1401
+    // Create rooms based on roomConfigs
+    if (hostel.roomConfigs) {
+        Object.entries(hostel.roomConfigs).forEach(([capStr, config]) => {
+            const capacity = parseInt(capStr);
+            const totalRooms = config.totalRooms;
 
-            // Random occupancy simulation
-            // Guest house is mostly empty, others random
-            const occupantsCount = hostel.id === 'guest-house' ? 0 : Math.floor(Math.random() * (capacity + 1));
-            const status = occupantsCount >= capacity ? "Full" : "Available";
+            for (let i = 1; i <= totalRooms; i++) {
+                const roomNum = `${capacity}0${i}`; // e.g., 401, 402... 1401
 
-            // Generate mock occupants
-            const occupants = Array.from({ length: occupantsCount }).map((_, idx) => `ST-${hostel.id.substring(0, 2).toUpperCase()}-${roomNum}-${idx}`);
+                // Random occupancy simulation
+                // Guest house is mostly empty, others random
+                const occupantsCount = hostel.id === 'guest-house' ? 0 : Math.floor(Math.random() * (capacity + 1));
+                const status = occupantsCount >= capacity ? "Full" : "Available";
 
-            rooms.push({
-                id: `${hostel.id}-${roomNum}`,
-                hostelId: hostel.id,
-                roomNumber: roomNum,
-                capacity: capacity,
-                occupants: occupants,
-                status: status
-            });
+                // Generate mock occupants
+                const occupants = Array.from({ length: occupantsCount }).map((_, idx) => `ST-${hostel.id.substring(0, 2).toUpperCase()}-${roomNum}-${idx}`);
 
-            hostelCapacity += capacity;
-            if (status === "Available") hostelAvailable += (capacity - occupantsCount);
-        }
-    });
+                rooms.push({
+                    id: `${hostel.id}-${roomNum}`,
+                    hostelId: hostel.id,
+                    roomNumber: roomNum,
+                    capacity: capacity,
+                    occupants: occupants,
+                    status: status
+                });
+
+                hostelCapacity += capacity;
+                if (status === "Available") hostelAvailable += (capacity - occupantsCount);
+            }
+        });
+    }
 
     // Updates stats
     hostel.capacity = hostelCapacity;
     hostel.availableRooms = hostelAvailable;
 });
+
+
 
 // 3. Generate Allocations based on populated rooms
 export const allocations: Allocation[] = rooms

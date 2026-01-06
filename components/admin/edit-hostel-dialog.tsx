@@ -33,6 +33,7 @@ interface EditHostelDialogProps {
     image: string;
     roomTypes?: number[];
     priceList?: Record<number, number>;
+    roomConfigs?: Record<number, { totalRooms: number; price: number }>;
   }) => void;
   currentHostel: {
     name: string;
@@ -43,6 +44,7 @@ interface EditHostelDialogProps {
     image: string;
     roomTypes?: number[];
     priceList?: Record<number, number>;
+    roomConfigs?: Record<number, { totalRooms: number; price: number }>;
   } | null;
 }
 
@@ -61,18 +63,27 @@ export function EditHostelDialog({
     image: currentHostel?.image || "",
   });
 
-  // Manage room configurations (Types & Prices)
-  const [configs, setConfigs] = useState<{ beds: number; price: number }[]>(
-    currentHostel && currentHostel.roomTypes && currentHostel.priceList
-      ? currentHostel.roomTypes.map((type: number) => ({
+  // Manage room configurations (Types & Prices & Counts)
+  const [configs, setConfigs] = useState<
+    { beds: number; price: number; totalRooms: number }[]
+  >(
+    currentHostel && currentHostel.roomConfigs
+      ? Object.entries(currentHostel.roomConfigs).map(([beds, config]) => ({
+          beds: parseInt(beds),
+          price: config.price,
+          totalRooms: config.totalRooms,
+        }))
+      : currentHostel && currentHostel.roomTypes
+      ? currentHostel.roomTypes.map((type) => ({
           beds: type,
           price: currentHostel.priceList?.[type] || currentHostel.price,
+          totalRooms: 5, // Default for migration
         }))
       : []
   );
 
   const handleAddConfig = () => {
-    setConfigs([...configs, { beds: 4, price: 150000 }]);
+    setConfigs([...configs, { beds: 4, price: 150000, totalRooms: 10 }]);
   };
 
   const handleRemoveConfig = (index: number) => {
@@ -81,7 +92,7 @@ export function EditHostelDialog({
 
   const handleConfigChange = (
     index: number,
-    field: "beds" | "price",
+    field: "beds" | "price" | "totalRooms",
     value: string
   ) => {
     const newConfigs = [...configs];
@@ -106,6 +117,10 @@ export function EditHostelDialog({
       acc[c.beds] = c.price;
       return acc;
     }, {} as Record<number, number>);
+    const roomConfigs = configs.reduce((acc, c) => {
+      acc[c.beds] = { totalRooms: c.totalRooms, price: c.price };
+      return acc;
+    }, {} as Record<number, { totalRooms: number; price: number }>);
 
     onEdit({
       name: formData.name,
@@ -118,6 +133,7 @@ export function EditHostelDialog({
         "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?q=80&w=2938&auto=format&fit=crop",
       roomTypes,
       priceList,
+      roomConfigs,
     });
 
     onOpenChange(false);
@@ -125,7 +141,7 @@ export function EditHostelDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] rounded-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[700px] rounded-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold">Edit Hostel</DialogTitle>
           <DialogDescription>
@@ -215,7 +231,8 @@ export function EditHostelDialog({
 
               {configs.length === 0 && (
                 <div className="text-center p-4 bg-slate-50 rounded-lg border border-dashed border-slate-200 text-sm text-slate-500">
-                  No room types configured. Add one to define beds and prices.
+                  No room types configured. Add one to define beds, prices, and
+                  quantity.
                 </div>
               )}
 
@@ -225,10 +242,8 @@ export function EditHostelDialog({
                     key={index}
                     className="flex items-end gap-3 p-3 bg-slate-50/50 rounded-xl border border-slate-100"
                   >
-                    <div className="grid gap-1.5 flex-1">
-                      <Label className="text-xs text-slate-500">
-                        Beds / Room
-                      </Label>
+                    <div className="grid gap-1.5 w-20">
+                      <Label className="text-xs text-slate-500">Beds</Label>
                       <Input
                         type="number"
                         value={config.beds}
@@ -251,6 +266,24 @@ export function EditHostelDialog({
                         }
                         className="h-9 bg-white"
                         min="0"
+                      />
+                    </div>
+                    <div className="grid gap-1.5 w-24">
+                      <Label className="text-xs text-slate-500">
+                        Total Rooms
+                      </Label>
+                      <Input
+                        type="number"
+                        value={config.totalRooms}
+                        onChange={(e) =>
+                          handleConfigChange(
+                            index,
+                            "totalRooms",
+                            e.target.value
+                          )
+                        }
+                        className="h-9 bg-white"
+                        min="1"
                       />
                     </div>
                     <Button

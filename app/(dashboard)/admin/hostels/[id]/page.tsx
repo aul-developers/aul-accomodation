@@ -33,6 +33,7 @@ import { Badge } from "@/components/ui/badge";
 import { AddRoomDialog } from "@/components/admin/add-room-dialog";
 import { EditRoomDialog } from "@/components/admin/edit-room-dialog";
 import { DeleteConfirmationDialog } from "@/components/admin/delete-confirmation-dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/lib/toast";
 
 export default function AdminHostelRoomsPage() {
@@ -196,8 +197,7 @@ export default function AdminHostelRoomsPage() {
           <CardContent>
             <div className="text-3xl font-bold text-green-600">
               {Math.round(
-                ((hostel.capacity - hostel.availableRooms * 4) /
-                  hostel.capacity) *
+                ((hostel.capacity - hostel.availableRooms) / hostel.capacity) *
                   100
               )}
               %
@@ -207,163 +207,218 @@ export default function AdminHostelRoomsPage() {
         </Card>
       </div>
 
-      {/* Main Content Card */}
-      <Card className="border-none shadow-xl shadow-slate-200/50 dark:shadow-none rounded-3xl overflow-hidden bg-white/80 backdrop-blur-sm">
-        <CardHeader className="px-8 pt-8 pb-4 border-b border-slate-100">
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-xl font-bold text-primary">
-                Room Inventory
-              </CardTitle>
-              <CardDescription className="mt-1">
-                Manage room details, capacity, and occupants for {hostel.name}
-              </CardDescription>
-            </div>
-            <div className="flex gap-2">
-              {/* Placeholders for filters if needed */}
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader className="bg-slate-50/50">
-              <TableRow className="hover:bg-transparent border-slate-100">
-                <TableHead className="pl-8 h-14">Room Number</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Occupancy</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right pr-8">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {hostelRooms.length > 0 ? (
-                hostelRooms.map((room) => {
-                  const percentage =
-                    (room.occupants.length / room.capacity) * 100;
-                  const isFull = room.occupants.length >= room.capacity;
+      {/* Main Content Tabs */}
+      <Tabs defaultValue="all" className="w-full">
+        <div className="flex items-center justify-between mb-4">
+          <TabsList className="bg-white border border-slate-200 p-1 rounded-xl h-auto">
+            <TabsTrigger
+              value="all"
+              className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white px-4 py-2"
+            >
+              All Rooms
+            </TabsTrigger>
+            {hostel.roomTypes
+              ?.sort((a, b) => a - b)
+              .map((type) => (
+                <TabsTrigger
+                  key={type}
+                  value={type.toString()}
+                  className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white px-4 py-2"
+                >
+                  {type} Beds
+                </TabsTrigger>
+              ))}
+          </TabsList>
+        </div>
 
-                  return (
-                    <TableRow
-                      key={room.id}
-                      className="hover:bg-slate-50/50 border-slate-100 transition-colors"
-                    >
-                      <TableCell className="pl-8 font-medium text-foreground">
-                        <div className="flex items-center gap-3">
-                          <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold text-xs">
-                            {room.roomNumber.substring(0, 1)}
-                          </div>
-                          {room.roomNumber}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          variant="outline"
-                          className="font-normal bg-white border-slate-200 text-slate-600"
-                        >
-                          {room.capacity} Bedded
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="w-[140px] space-y-2">
-                          <div className="flex justify-between text-xs font-medium">
-                            <span className="text-muted-foreground">
-                              {room.occupants.length} / {room.capacity} Students
-                            </span>
-                            <span className="text-primary">
-                              {Math.round(percentage)}%
-                            </span>
-                          </div>
-                          <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
-                            <div
-                              className={`h-full rounded-full transition-all duration-500 ${
-                                isFull
-                                  ? "bg-red-500"
-                                  : percentage > 50
-                                  ? "bg-primary"
-                                  : "bg-green-500"
-                              }`}
-                              style={{ width: `${percentage}%` }}
-                            />
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        {isFull ? (
-                          <Badge
-                            variant="secondary"
-                            className="bg-red-100 text-red-700 hover:bg-red-100 border-none"
-                          >
-                            Full
-                          </Badge>
-                        ) : room.occupants.length === 0 ? (
-                          <Badge
-                            variant="secondary"
-                            className="bg-green-100 text-green-700 hover:bg-green-100 border-none"
-                          >
-                            Empty
-                          </Badge>
+        {/* Helper to render table */}
+        {["all", ...(hostel.roomTypes?.map((t) => t.toString()) || [])].map(
+          (tabValue) => {
+            const filteredRooms =
+              tabValue === "all"
+                ? hostelRooms
+                : hostelRooms.filter((r) => r.capacity === parseInt(tabValue));
+
+            return (
+              <TabsContent key={tabValue} value={tabValue} className="mt-0">
+                <Card className="border-none shadow-xl shadow-slate-200/50 dark:shadow-none rounded-3xl overflow-hidden bg-white/80 backdrop-blur-sm">
+                  <CardHeader className="px-8 pt-8 pb-4 border-b border-slate-100">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <CardTitle className="text-xl font-bold text-primary">
+                          {tabValue === "all"
+                            ? "All Rooms Inventory"
+                            : `${tabValue}-Bedded Rooms`}
+                        </CardTitle>
+                        <CardDescription className="mt-1">
+                          {tabValue === "all"
+                            ? `Managing all ${filteredRooms.length} rooms`
+                            : `Managing ${filteredRooms.length} rooms of ${tabValue} beds`}
+                        </CardDescription>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-0">
+                    <Table>
+                      <TableHeader className="bg-slate-50/50">
+                        <TableRow className="hover:bg-transparent border-slate-100">
+                          <TableHead className="pl-8 h-14">
+                            Room Number
+                          </TableHead>
+                          <TableHead>Type</TableHead>
+                          <TableHead>Occupancy</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead className="text-right pr-8">
+                            Actions
+                          </TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {filteredRooms.length > 0 ? (
+                          filteredRooms
+                            .sort((a, b) =>
+                              a.roomNumber.localeCompare(
+                                b.roomNumber,
+                                undefined,
+                                {
+                                  numeric: true,
+                                }
+                              )
+                            )
+                            .map((room) => {
+                              const percentage =
+                                (room.occupants.length / room.capacity) * 100;
+                              const isFull =
+                                room.occupants.length >= room.capacity;
+
+                              return (
+                                <TableRow
+                                  key={room.id}
+                                  className="hover:bg-slate-50/50 border-slate-100 transition-colors"
+                                >
+                                  <TableCell className="pl-8 font-medium text-foreground">
+                                    <div className="flex items-center gap-3">
+                                      <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold text-xs">
+                                        {room.roomNumber.substring(0, 1)}
+                                      </div>
+                                      {room.roomNumber}
+                                    </div>
+                                  </TableCell>
+                                  <TableCell>
+                                    <Badge
+                                      variant="outline"
+                                      className="font-normal bg-white border-slate-200 text-slate-600"
+                                    >
+                                      {room.capacity} Bedded
+                                    </Badge>
+                                  </TableCell>
+                                  <TableCell>
+                                    <div className="w-[140px] space-y-2">
+                                      <div className="flex justify-between text-xs font-medium">
+                                        <span className="text-muted-foreground">
+                                          {room.occupants.length} /{" "}
+                                          {room.capacity} Students
+                                        </span>
+                                        <span className="text-primary">
+                                          {Math.round(percentage)}%
+                                        </span>
+                                      </div>
+                                      <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                                        <div
+                                          className={`h-full rounded-full transition-all duration-500 ${
+                                            isFull
+                                              ? "bg-red-500"
+                                              : percentage > 50
+                                              ? "bg-primary"
+                                              : "bg-green-500"
+                                          }`}
+                                          style={{ width: `${percentage}%` }}
+                                        />
+                                      </div>
+                                    </div>
+                                  </TableCell>
+                                  <TableCell>
+                                    {isFull ? (
+                                      <Badge
+                                        variant="secondary"
+                                        className="bg-red-100 text-red-700 hover:bg-red-100 border-none"
+                                      >
+                                        Full
+                                      </Badge>
+                                    ) : room.occupants.length === 0 ? (
+                                      <Badge
+                                        variant="secondary"
+                                        className="bg-green-100 text-green-700 hover:bg-green-100 border-none"
+                                      >
+                                        Empty
+                                      </Badge>
+                                    ) : (
+                                      <Badge
+                                        variant="secondary"
+                                        className="bg-blue-100 text-blue-700 hover:bg-blue-100 border-none"
+                                      >
+                                        Available
+                                      </Badge>
+                                    )}
+                                  </TableCell>
+                                  <TableCell className="text-right pr-8">
+                                    <div className="flex justify-end gap-2">
+                                      <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="h-8 w-8 hover:bg-primary/10 hover:text-primary transition-colors"
+                                        onClick={() =>
+                                          setEditDialog({
+                                            open: true,
+                                            room: {
+                                              id: room.id,
+                                              roomNumber: room.roomNumber,
+                                              capacity: room.capacity,
+                                              status: room.status,
+                                            },
+                                          })
+                                        }
+                                      >
+                                        <Edit className="h-4 w-4" />
+                                      </Button>
+                                      <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="h-8 w-8 hover:bg-red-50 hover:text-red-600 transition-colors"
+                                        onClick={() =>
+                                          setDeleteDialog({
+                                            open: true,
+                                            roomId: room.id,
+                                            roomNumber: room.roomNumber,
+                                          })
+                                        }
+                                      >
+                                        <Trash2 className="h-4 w-4" />
+                                      </Button>
+                                    </div>
+                                  </TableCell>
+                                </TableRow>
+                              );
+                            })
                         ) : (
-                          <Badge
-                            variant="secondary"
-                            className="bg-blue-100 text-blue-700 hover:bg-blue-100 border-none"
-                          >
-                            Available
-                          </Badge>
+                          <TableRow>
+                            <TableCell
+                              colSpan={5}
+                              className="h-32 text-center text-muted-foreground"
+                            >
+                              No rooms found for this category.
+                            </TableCell>
+                          </TableRow>
                         )}
-                      </TableCell>
-                      <TableCell className="text-right pr-8">
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 hover:bg-primary/10 hover:text-primary transition-colors"
-                            onClick={() =>
-                              setEditDialog({
-                                open: true,
-                                room: {
-                                  id: room.id,
-                                  roomNumber: room.roomNumber,
-                                  capacity: room.capacity,
-                                  status: room.status,
-                                },
-                              })
-                            }
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 hover:bg-red-50 hover:text-red-600 transition-colors"
-                            onClick={() =>
-                              setDeleteDialog({
-                                open: true,
-                                roomId: room.id,
-                                roomNumber: room.roomNumber,
-                              })
-                            }
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={5}
-                    className="h-32 text-center text-muted-foreground"
-                  >
-                    No rooms found for this hostel.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+                      </TableBody>
+                    </Table>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            );
+          }
+        )}
+      </Tabs>
 
       <AddRoomDialog
         open={isAddDialogOpen}

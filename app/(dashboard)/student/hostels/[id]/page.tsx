@@ -25,25 +25,50 @@ export default function HostelDetailsPage() {
   }
 
   // 2. Aggregate Data by Room Type
-  const roomTypesData = hostel.roomTypes.map((type) => {
-    const roomsOfType = hostelRooms.filter((r) => r.capacity === type);
-    const totalBeds = roomsOfType.reduce((acc, r) => acc + r.capacity, 0);
-    const occupiedBeds = roomsOfType.reduce(
-      (acc, r) => acc + r.occupants.length,
-      0
-    );
-    const availableBeds = totalBeds - occupiedBeds;
-    const price = hostel.priceList[type] || hostel.price;
+  const roomTypesData = hostel.roomConfigs
+    ? Object.entries(hostel.roomConfigs).map(([typeStr, config]) => {
+        const type = parseInt(typeStr);
+        const totalBeds = config.totalRooms * type;
 
-    return {
-      type,
-      totalBeds,
-      occupiedBeds,
-      availableBeds,
-      price,
-      isAvailable: availableBeds > 0,
-    };
-  });
+        // In a real app, we check actual allocations.
+        // Here we check mock rooms that match this type.
+        const roomsOfType = hostelRooms.filter((r) => r.capacity === type);
+        const occupiedBeds = roomsOfType.reduce(
+          (acc, r) => acc + r.occupants.length,
+          0
+        );
+
+        const availableBeds = totalBeds - occupiedBeds;
+        const price = config.price;
+
+        return {
+          type,
+          totalBeds,
+          occupiedBeds,
+          availableBeds: Math.max(0, availableBeds),
+          price,
+          isAvailable: availableBeds > 0,
+        };
+      })
+    : hostel.roomTypes.map((type) => {
+        const roomsOfType = hostelRooms.filter((r) => r.capacity === type);
+        const totalBeds = roomsOfType.reduce((acc, r) => acc + r.capacity, 0);
+        const occupiedBeds = roomsOfType.reduce(
+          (acc, r) => acc + r.occupants.length,
+          0
+        );
+        const availableBeds = totalBeds - occupiedBeds;
+        const price = hostel.priceList[type] || hostel.price;
+
+        return {
+          type,
+          totalBeds,
+          occupiedBeds,
+          availableBeds,
+          price,
+          isAvailable: availableBeds > 0,
+        };
+      });
 
   const handleSelectCategory = (type: number) => {
     // Navigate to payment with Category info
