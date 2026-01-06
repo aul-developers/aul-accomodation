@@ -26,25 +26,42 @@ import { toast } from "sonner";
 function PaymentContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+
+  // Support both flows: Specific Room (Old/Admin) OR Room Type (Random Student)
   const roomId = searchParams.get("roomId");
+  const hostelIdParam = searchParams.get("hostelId");
+  const roomTypeParam = searchParams.get("roomType");
   const status = searchParams.get("status");
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(status === "success");
   const [paymentMethod, setPaymentMethod] = useState<"paystack" | null>(null);
 
-  // Find data
-  const room = rooms.find((r) => r.id === roomId);
-  const hostel = room ? hostels.find((h) => h.id === room.hostelId) : null;
+  // Resolution Logic
+  let room: (typeof rooms)[number] | undefined | null = null;
+  let hostel = null;
+  let selectedCapacity = 0;
 
-  if (!roomId && !isSuccess) {
+  if (roomId) {
+    room = rooms.find((r) => r.id === roomId);
+    hostel = room ? hostels.find((h) => h.id === room?.hostelId) : null;
+    selectedCapacity = room?.capacity || 0;
+  } else if (hostelIdParam && roomTypeParam) {
+    hostel = hostels.find((h) => h.id === hostelIdParam);
+    selectedCapacity = parseInt(roomTypeParam);
+  }
+
+  // Validation
+  const isValidSelection = (room && hostel) || (hostel && selectedCapacity);
+
+  if (!isValidSelection && !isSuccess) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-6">
         <h2 className="text-xl font-bold text-slate-800 mb-2">
           No Selection Found
         </h2>
         <p className="text-slate-500 mb-6">
-          Please go back and select a room to proceed with payment.
+          Please go back and select a room category to proceed with payment.
         </p>
         <Link href="/student/hostels">
           <Button>Browse Hostels</Button>
@@ -55,18 +72,19 @@ function PaymentContent() {
 
   const handlePayment = () => {
     setIsProcessing(true);
-    // Simulate Paystack Delay
+    // Simulate Paystack Delay AND Allocation
     setTimeout(() => {
       setIsProcessing(false);
       setIsSuccess(true);
-      toast.success("Payment Successful! Room Allocated.");
+      toast.success("Payment Successful! Room Allocation in progress.");
+      // In a real app, we would call the backend here to "Assign Random Room"
     }, 2000);
   };
 
-  // Determine price based on room capacity
+  // Determine price
   const roomPrice =
-    room && hostel && hostel.priceList
-      ? hostel.priceList[room.capacity]
+    hostel && hostel.priceList && selectedCapacity
+      ? hostel.priceList[selectedCapacity]
       : hostel?.price || 0;
 
   if (isSuccess) {
@@ -76,17 +94,22 @@ function PaymentContent() {
           <CheckCircle2 className="h-12 w-12" />
         </div>
         <h1 className="text-3xl font-bold text-slate-900 mb-2">
-          Allocation Confirmed!
+          Payment Confirmed!
         </h1>
         <p className="text-slate-500 mb-8">
-          You have successfully paid for{" "}
-          <strong>Room {room?.roomNumber}</strong> in{" "}
-          <strong>{hostel?.name}</strong>. Your allocation slip is ready.
+          You have successfully paid for a{" "}
+          <strong>{selectedCapacity}-Bed Room</strong> in{" "}
+          <strong>{hostel?.name}</strong>.
+          <br />
+          <br />
+          <span className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
+            Auto-Allocation In Progress
+          </span>
         </p>
         <div className="flex flex-col gap-3 w-full">
           <Link href="/student/allocation" className="w-full">
             <Button size="lg" className="w-full bg-primary hover:bg-primary/90">
-              View Allocation Slip
+              Check Allocation Status
             </Button>
           </Link>
           <Link href="/student" className="w-full">
@@ -99,7 +122,7 @@ function PaymentContent() {
     );
   }
 
-  if (!room || !hostel) return <div>Invalid Room Selection</div>;
+  if (!hostel) return <div>Invalid Selection</div>;
 
   return (
     <div className="max-w-2xl mx-auto w-full py-10 px-4">
@@ -132,16 +155,27 @@ function PaymentContent() {
                 </p>
               </div>
               <div>
-                <p className="text-xs text-slate-500">Room Type</p>
+                <p className="text-xs text-slate-500">Room Category</p>
                 <p className="text-lg font-bold text-slate-900">
-                  {room.capacity} Bedded Room
+                  {selectedCapacity} Bedded Room
                 </p>
               </div>
               <div>
-                <p className="text-xs text-slate-500">Selected Room</p>
-                <p className="text-xl font-bold text-primary">
-                  Room {room.roomNumber}
-                </p>
+                <p className="text-xs text-slate-500">Room Assignment</p>
+                {room ? (
+                  <p className="text-xl font-bold text-primary">
+                    Room {room.roomNumber}
+                  </p>
+                ) : (
+                  <div className="flex items-center gap-2 mt-1">
+                    <Badge
+                      variant="outline"
+                      className="text-amber-600 bg-amber-50 border-amber-200"
+                    >
+                      Auto-Assigning...
+                    </Badge>
+                  </div>
+                )}
               </div>
               <div>
                 <p className="text-xs text-slate-500">Session</p>
@@ -153,7 +187,7 @@ function PaymentContent() {
           {/* Price Breakdown */}
           <div className="bg-slate-50 rounded-xl p-6 space-y-3 border border-slate-100">
             <div className="flex justify-between text-sm text-slate-600">
-              <span>Accommodation Fee ({room.capacity} Man Room)</span>
+              <span>Accommodation Fee ({selectedCapacity} Man Room)</span>
               <span>₦{roomPrice.toLocaleString()}</span>
             </div>
             <div className="flex justify-between text-sm text-slate-600">
@@ -177,7 +211,7 @@ function PaymentContent() {
               </h3>
               <div className="grid grid-cols-1 gap-3">
                 <Link
-                  href={`/student/payment/card?roomId=${roomId}`}
+                  href={`/student/payment/card?hostelId=${hostel.id}&roomType=${selectedCapacity}`}
                   className="w-full"
                 >
                   <Button
