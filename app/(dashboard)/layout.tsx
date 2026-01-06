@@ -18,7 +18,7 @@ export default function DashboardLayout({
         We use padding-left (md:pl-64) to offset the main content.
         This prevents double-margins and grid conflicts.
       */}
-      <div className="flex flex-col min-h-screen md:pl-[280px] transition-[padding] duration-300 print:pl-0 print:block pt-24 md:pt-0">
+      <div className="flex flex-col min-h-screen md:pl-[280px] transition-[padding] duration-300 print:pl-0 print:block pt-24 md:pt-24">
         <div className="print:hidden">
           <DashboardHeader />
         </div>

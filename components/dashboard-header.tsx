@@ -26,7 +26,7 @@ export function DashboardHeader() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <header className="fixed top-0 left-0 right-0 md:sticky md:top-0 z-40 flex h-24 items-center justify-between gap-4 bg-white/80 backdrop-blur-xl px-4 md:px-8 border-b border-slate-100/50 transition-all duration-300">
+    <header className="fixed top-0 right-0 z-40 flex h-24 items-center justify-between gap-4 bg-white/80 backdrop-blur-xl px-4 md:px-8 border-b border-slate-100/50 transition-all duration-300 w-full md:w-[calc(100%-280px)]">
       <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
         <SheetTrigger asChild>
           <Button
