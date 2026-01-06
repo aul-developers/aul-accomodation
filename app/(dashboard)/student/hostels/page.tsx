@@ -19,16 +19,16 @@ import {
 export default function HostelsPage() {
   return (
     <div className="flex flex-col gap-10 pb-20 max-w-7xl mx-auto w-full px-4 sm:px-6">
-      <div className="text-center max-w-2xl mx-auto space-y-4 pt-8">
-        <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900">
+      <div className="text-center max-w-2xl mx-auto space-y-4 pt-4 sm:pt-8">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900">
           Student Halls of Residence
         </h1>
-        <p className="text-lg text-slate-600 leading-relaxed">
+        <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-xs sm:max-w-none mx-auto">
           Official on-campus accommodation for the 2025/2026 Academic Session.
         </p>
       </div>
 
-      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-6 sm:gap-8 md:grid-cols-2 lg:grid-cols-3">
         {hostels.map((hostel) => (
           <div key={hostel.id} className="group">
             <Card className="h-full border-0 shadow-lg shadow-slate-200/50 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 bg-white rounded-2xl overflow-hidden flex flex-col">
