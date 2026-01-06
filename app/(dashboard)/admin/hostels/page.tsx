@@ -25,6 +25,8 @@ export default function AdminHostelsPage() {
       capacity: number;
       price: number;
       image: string;
+      roomTypes?: number[];
+      priceList?: Record<number, number>;
     } | null;
   }>({
     open: false,
@@ -76,6 +78,8 @@ export default function AdminHostelsPage() {
     capacity: number;
     price: number;
     image: string;
+    roomTypes?: number[];
+    priceList?: Record<number, number>;
   }) => {
     if (!editDialog.hostel) return;
 
@@ -90,6 +94,8 @@ export default function AdminHostelsPage() {
               capacity: updatedHostel.capacity,
               price: updatedHostel.price,
               image: updatedHostel.image,
+              roomTypes: updatedHostel.roomTypes || h.roomTypes,
+              priceList: updatedHostel.priceList || h.priceList,
             }
           : h
       )

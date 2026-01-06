@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { notFound } from "next/navigation";
+import { notFound, useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -35,12 +35,10 @@ import { EditRoomDialog } from "@/components/admin/edit-room-dialog";
 import { DeleteConfirmationDialog } from "@/components/admin/delete-confirmation-dialog";
 import { toast } from "@/lib/toast";
 
-export default function AdminHostelRoomsPage({
-  params,
-}: {
-  params: { id: string };
-}) {
-  const hostel = hostels.find((h) => h.id === params.id);
+export default function AdminHostelRoomsPage() {
+  const params = useParams();
+  const id = params?.id as string;
+  const hostel = hostels.find((h) => h.id === id);
 
   if (!hostel) {
     notFound();
